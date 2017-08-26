@@ -377,7 +377,8 @@ section.main .content .title-container .initials a:hover {
   color: #333;
 }
 section.main .content .page-heading {
-  font-size: 18px;
+  font-size: 26px;
+  line-height: 39px;
   font-family: 'Raleway', 'Helvetica Neue', 'Arial', sans-serif;
   letter-spacing: -0.005rem;
   font-weight: 700;
