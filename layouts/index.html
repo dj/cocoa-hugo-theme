@@ -1,30 +1,120 @@
 {{ partial "header.html" . }}
-<section class="main">
+<style>
+    .bg {
+        z-index: -1;
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-attachment: fixed;
+        -webkit-justify-content: center;
+        -moz-justify-content: center;
+        -ms-justify-content: center;
+        justify-content: center;
+    }
+
+    .bg::before {
+        position: absolute;
+        content: "";
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-image: linear-gradient( to bottom right,
+        hsl(196, 100%, 45%),
+        hsl(150, 100%, 45%));
+        z-index: 1;
+        animation: fade 12s ease-in-out 0s normal infinite;
+    }
+
+    .bg::after {
+        position: absolute;
+        content: "";
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-image: linear-gradient( to bottom right,
+        hsl(150, 100%, 45%),
+        hsl(196, 100%, 45%));
+        z-index: -1;
+        animation: fade2 12s ease-in-out 0s alternate infinite;
+    }
+
+    @keyframes fade {
+        0% {
+            opacity: 0.1;
+        }
+        25% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0.1;
+        }
+    }
+
+    @keyframes fade2 {
+        0% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.1;
+        }
+        100% {
+            opacity: 1;
+        }
+    }
+
+    section.profile-card .content {
+        text-align: center;
+        width: 300px;
+        margin: 0 auto;
+        /* background-color: #efefef; */
+        background-color: rgba(200, 200, 200, 0.851);
+        padding: 1rem 0;
+        border-radius: 7px;
+        -webkit-align-items: center;
+        -moz-align-items: center;
+        -ms-align-items: center;
+        align-items: center;
+    }
+</style>
+
+<div class="bg"></div>
+
+<section class="profile-card">
     <div class="container">
         <div class="content">
-            {{ if .Content }}
-                <div class="markdown">
-                    {{ .Content }}
-                </div>
-            {{ end }}
-            {{ $totalpostscount := len (where .Data.Pages "Section" "blog") }}
-            {{ $latestpostscount := .Site.Params.latestpostscount | default $totalpostscount }}
-            {{ if gt $latestpostscount 0 }}
-              <div class="page-heading">{{ i18n "latestPosts" }}</div>
-                <ul>
-                    {{ range (first $latestpostscount (where .Data.Pages.ByPublishDate "Section" "blog")) }}
-                        {{ partial "li.html" . }}
+            {{ if .Site.Params.gravatar }}
+            <a {{ printf "href=%q" ("/" | relLangURL) | safeHTMLAttr }}><img class="avatar" src="https://gravatar.com/avatar/{{ .Site.Params.gravatar }}?s=75" srcset="https://gravatar.com/avatar/{{ .Site.Params.gravatar }}?s=150 2x, https://gravatar.com/avatar/{{ .Site.Params.gravatar }}?s=225 3x, https://gravatar.com/avatar/{{ .Site.Params.gravatar }}?s=400 4x"></a>
+            {{ else if .Site.Params.avatar }}
+                {{ $.Scratch.Add "srcset" (slice (printf "%s 1x" (.Site.Params.avatar|absURL))) }}
+                {{ $directory := replaceRE "^(.*)/[^/]+$" "$1" .Site.Params.avatar }}
+                {{ $basename := replaceRE "^.*/([^./]+).*$" "$1" .Site.Params.avatar }}
+                {{ $extension := replaceRE "^.*/[^.]+\\.([^.]+)$" "$1" .Site.Params.avatar }}
+                {{ range (readDir (printf "static/%s" $directory)) }}
+                    {{ if findRE (printf "^%s-\\d+x\\.%s$" $basename $extension) .Name }}
+                        {{ $.Scratch.Add "srcset" (slice (replaceRE (printf "^(%s)-(\\d+x)\\.(%s)$" $basename $extension) (printf "%s/$1-$2.$3 $2" ($directory|absURL)) .Name)) }}
                     {{ end }}
-                    {{ if gt $totalpostscount $latestpostscount }}
-                        {{ range where .Site.Menus.main "Identifier" "blog" }}
-                            <li class="post-item no-bullet">
-                                <a id="see-more" {{ printf "href=%q " .URL | safeHTMLAttr }}><span>See more&hellip;</span></a>
-                            </li>
-                        {{ end }}
+                {{ end }}
+                {{ $srcset := delimit ($.Scratch.Get "srcset") "," }}
+                <a {{ printf "href=%q" ("/" | relLangURL) | safeHTMLAttr }}><img class="avatar" src="/{{ .Site.Params.avatar }}" {{ printf "srcset=%q" $srcset | safeHTMLAttr }}></a>
+            {{ end }}
+            <a href="/"><div class="name">{{ .Site.Params.author }}</div></a>
+            {{ if .Site.Params.selfintro }}
+            <h3 class="self-intro">{{ .Site.Params.selfintro }}</h3>
+            {{ end }}
+            <nav>
+                <ul>
+                    {{ range .Site.Menus.main }}
+                        <li class="nav-{{ .Identifier }}"><a href="{{ .URL | absLangURL }}">{{ .Pre }}<span>{{ .Name }}</span></a></li>
                     {{ end }}
                 </ul>
-              </div>
-            {{ end }}
+            </nav>
+        </div>
     </div>
 </section>
 {{ partial "footer.html" . }}
