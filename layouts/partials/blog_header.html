@@ -28,11 +28,11 @@
               <h3 class="self-intro">{{ .Site.Params.selfintro }}</h3>
             {{ end }}
             <nav>
-                <ul>
+                <!-- <ul>
                     {{ range .Site.Menus.main }}
-                        <li class="nav-{{ .Identifier }}"><a href="{{ .URL | absLangURL }}">{{ .Pre }}<span>{{ .Name }}</span></a></li>
+                        <li class="nav-{{ .Identifier }}"><a href="{{ .URL | absLangURL }}">{{ .Pre }}<span>{{ .Name | safeHTML }}</span></a></li>
                     {{ end }}
-                </ul>
+                </ul> -->
             </nav>
         </div>
     </div>
