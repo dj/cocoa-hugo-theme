@@ -10,11 +10,17 @@
     }
 
     .name {
-        margin: 0.25rem 0;
+        margin: 0 0.25rem;
         font: 1.8rem/2.0rem 'Lato';
         font-weight: 500;
         color: #e7e7e7;
         color: #222;
+        padding-top: 5rem;
+    }
+
+    .avatar {
+        margin-top: .5rem;
+        margin-bottom: -6rem;
     }
 
     .self-intro {
@@ -33,12 +39,16 @@
         font-size: 0.9rem;
     }
 
-    nav {
+    nav ul {
+        display: flex;
+        flex-wrap: wrap;
     }
 
     nav ul li {
         font-size: 1rem;
+        margin: 5px 0;
         font-weight: 300;
+        width: 33.3333%;
     }
 
     nav ul li a {
@@ -180,7 +190,7 @@
                 <nav>
                     <ul>
                         {{ range .Site.Menus.main }}
-                            <li class="nav-{{ .Identifier }}"><a href="{{ .URL | absLangURL }}">{{ .Pre }}<span>{{ .Name }}</span></a></li>
+                            <li class="nav-{{ .Identifier }}"><a href="{{ .URL | absLangURL }}">{{ .Pre }}<span>{{ .Name | safeHTML }}</span></a></li>
                         {{ end }}
                     </ul>
                 </nav>
